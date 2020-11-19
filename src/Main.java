@@ -14,7 +14,7 @@ public class Main {
 
         // This is the sudoku board representation
         // 0 represents an empty space
-        int [][] board = initializeBoardFromFile(fileName);
+        int [][] board = initializeBoardFromFile("puzzles/" + fileName);
         printArr(board);
         board = solve(board);
         printArr(board);
@@ -41,7 +41,7 @@ public class Main {
                             //System.out.println("i: " + i + "\tj: " + j + "\tk: " + k);
                             finalBoard = solve(newBoard);
                             if(finalBoard != null) {
-                                System.out.println("Returning a board");
+                                //System.out.println("Returning a board");
                                 return finalBoard;
                             }
                         }
@@ -106,10 +106,14 @@ public class Main {
     }
 
     public static void printArr(int[][] arr) {
+        if(arr == null) {
+            System.out.println("Invalid board");
+            return;
+        }
         System.out.println("Board State: ");
-        for(int i = 0; i < arr.length; i++) {
-            for(int j = 0; j < arr[i].length; j++) {
-                System.out.print(arr[i][j] + " ");
+        for(int[] row : arr) {
+            for(int val : row) {
+                System.out.print(val + " ");
             }
             System.out.println();
         }
