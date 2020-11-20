@@ -1,11 +1,13 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         // Get the file name
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter file name: ");
@@ -16,39 +18,45 @@ public class Main {
         // 0 represents an empty space
         int [][] board = initializeBoardFromFile("puzzles/" + fileName);
         printArr(board);
-        board = solve(board);
+        Instant start = Instant.now();
+        board = solveBacktracking(board);
+        Instant end = Instant.now();
         printArr(board);
+        System.out.println("Elapsed Time: " + Duration.between(start, end));
     }
 
-    public static int[][] solve(int[][] board) {
+    public static int[][] solveBacktracking(int[][] board) {
+
         int[][] newBoard = new int[9][9];
         for(int i = 0; i < newBoard.length; i++) {
             newBoard[i] = Arrays.copyOf(board[i], 9);
         }
 
-        //printArr(newBoard);
         // Iterate until we find a zero
         for(int i = 0; i < board.length; i++) {
             for(int j = 0; j < board.length; j++) {
                 if(newBoard[i][j] == 0) {
                     boolean oneValid = false;
                     int[][] finalBoard;
+
                     // Simulate putting each number in the spot
                     for(int k = 1; k <= 9; k++) {
                         if(isValid(newBoard, k, i, j)) {
                             oneValid = true;
                             newBoard[i][j] = k;
                             //System.out.println("i: " + i + "\tj: " + j + "\tk: " + k);
-                            finalBoard = solve(newBoard);
+                            finalBoard = solveBacktracking(newBoard);
                             if(finalBoard != null) {
                                 //System.out.println("Returning a board");
                                 return finalBoard;
                             }
+
                         }
                     }
+
+                    // If we aren't able to find a valid value, the current board has a mistake
                     if(!oneValid) {
                         //System.out.println("No valid values");
-                        //printArr(board);
                         return null;
                     }
 
@@ -75,8 +83,6 @@ public class Main {
         }
 
         // Check the square
-
-        // Check which square it is in
         int squareRow = i / 3;
         int squareCol = j / 3;
         for(int row = squareRow * 3; row < squareRow * 3 + 3; row++) {
